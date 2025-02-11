@@ -52,8 +52,9 @@ Stacking Regressor (Best Model) → MAE: 0.0021, RMSE: 0.0087, R²: 0.9998.
 Saves best model as best_model.pkl for real-time predictions.
 Creates an inference pipeline for seamless integration.
 
-🔍 Example Usage
-Load & Preprocess Data
+🔍 Example Usage with Advanced Algorithms
+1️⃣ Load & Preprocess Data
+
 import pandas as pd
 
 # Load datasets
@@ -64,38 +65,112 @@ cleaned_data = pd.read_csv("cleaned_and_engineered_logistics_data.csv")
 # Merge datasets
 X = pd.concat([processed_data, pca_results, cleaned_data], axis=1)
 y = processed_data["actual_time"]
-Train-Test Split
+
+# Check dataset shape
+print(f"Feature Matrix Shape: {X.shape}, Target Shape: {y.shape}")
+2️⃣ Train-Test Splitting
 
 from sklearn.model_selection import train_test_split
 
+# Split dataset into training (80%) and testing (20%)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-Train & Evaluate Models
 
-from sklearn.linear_model import LinearRegression
+print(f"Train Size: {X_train.shape}, Test Size: {X_test.shape}")
+3️⃣ Train XGBoost Model
+
+import xgboost as xgb
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
-# Train Linear Regression
-model = LinearRegression()
-model.fit(X_train, y_train)
+# Initialize XGBoost model with best parameters
+xgb_model = xgb.XGBRegressor(max_depth=7, n_estimators=100, learning_rate=0.1)
 
-# Evaluate
-y_pred = model.predict(X_test)
-mae = mean_absolute_error(y_test, y_pred)
-rmse = mean_squared_error(y_test, y_pred, squared=False)
-r2 = r2_score(y_test, y_pred)
+# Train model
+xgb_model.fit(X_train, y_train)
 
-print(f"MAE: {mae}, RMSE: {rmse}, R²: {r2}")
-Load & Use the Best Model for Inference
+# Predict on test data
+y_pred_xgb = xgb_model.predict(X_test)
+
+# Evaluate model performance
+mae_xgb = mean_absolute_error(y_test, y_pred_xgb)
+rmse_xgb = mean_squared_error(y_test, y_pred_xgb, squared=False)
+r2_xgb = r2_score(y_test, y_pred_xgb)
+
+print(f"XGBoost Performance:\nMAE: {mae_xgb:.4f}, RMSE: {rmse_xgb:.4f}, R²: {r2_xgb:.4f}")
+4️⃣ Train LightGBM Model
+
+import lightgbm as lgb
+
+# Initialize LightGBM model with best parameters
+lgb_model = lgb.LGBMRegressor(num_leaves=31, n_estimators=200, learning_rate=0.1)
+
+# Train model
+lgb_model.fit(X_train, y_train)
+
+# Predict on test data
+y_pred_lgb = lgb_model.predict(X_test)
+
+# Evaluate model performance
+mae_lgb = mean_absolute_error(y_test, y_pred_lgb)
+rmse_lgb = mean_squared_error(y_test, y_pred_lgb, squared=False)
+r2_lgb = r2_score(y_test, y_pred_lgb)
+
+print(f"LightGBM Performance:\nMAE: {mae_lgb:.4f}, RMSE: {rmse_lgb:.4f}, R²: {r2_lgb:.4f}")
+5️⃣ Train Artificial Neural Network (ANN)
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+# Build ANN Model
+model = Sequential([
+    Dense(64, activation='relu', input_dim=X_train.shape[1]),
+    Dense(32, activation='relu'),
+    Dense(1)  # Output layer
+])
+
+# Compile the model
+model.compile(optimizer='adam', loss='mean_squared_error')
+
+# Train the model
+history = model.fit(X_train, y_train, epochs=50, batch_size=32, validation_split=0.2, verbose=1)
+
+# Predict on test data
+y_pred_ann = model.predict(X_test)
+
+# Evaluate performance
+mae_ann = mean_absolute_error(y_test, y_pred_ann)
+rmse_ann = mean_squared_error(y_test, y_pred_ann, squared=False)
+r2_ann = r2_score(y_test, y_pred_ann)
+
+print(f"ANN Performance:\nMAE: {mae_ann:.4f}, RMSE: {rmse_ann:.4f}, R²: {r2_ann:.4f}")
+6️⃣ Compare Model Performances
+import pandas as pd
+
+# Create a dataframe to compare models
+performance_df = pd.DataFrame({
+    "Model": ["XGBoost", "LightGBM", "ANN"],
+    "MAE": [mae_xgb, mae_lgb, mae_ann],
+    "RMSE": [rmse_xgb, rmse_lgb, rmse_ann],
+    "R² Score": [r2_xgb, r2_lgb, r2_ann]
+})
+
+# Print results
+print("\nModel Performance Comparison:\n", performance_df)
+7️⃣ Save & Deploy the Best Model
 
 import joblib
-import numpy as np
+# Save the best-performing model
+best_model = xgb_model  # Example: XGBoost performed best
+joblib.dump(best_model, "best_model.pkl")
 
-# Load saved model
-best_model = joblib.load("best_model.pkl")
+print("Best model saved as 'best_model.pkl'.")
+8️⃣ Load & Use the Saved Model for Inference
+# Load the saved model
+loaded_model = joblib.load("best_model.pkl")
 
-# Make predictions
-sample_input = np.array(X_test.iloc[0]).reshape(1, -1)
-predicted_time = best_model.predict(sample_input)
+# Make a prediction on new data
+sample_input = X_test.iloc[0].values.reshape(1, -1)
+predicted_time = loaded_model.predict(sample_input)
 
 print("Predicted Delivery Time:", predicted_time)
 
