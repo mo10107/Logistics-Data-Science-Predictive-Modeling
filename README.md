@@ -53,8 +53,8 @@ Saves best model as best_model.pkl for real-time predictions.
 Creates an inference pipeline for seamless integration.
 
 🔍 Example Usage with Advanced Algorithms
-1️⃣ Load & Preprocess Data
 
+1️⃣ Load & Preprocess Data
 import pandas as pd
 
 # Load datasets
@@ -68,16 +68,16 @@ y = processed_data["actual_time"]
 
 # Check dataset shape
 print(f"Feature Matrix Shape: {X.shape}, Target Shape: {y.shape}")
-2️⃣ Train-Test Splitting
 
+2️⃣ Train-Test Splitting
 from sklearn.model_selection import train_test_split
 
 # Split dataset into training (80%) and testing (20%)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 print(f"Train Size: {X_train.shape}, Test Size: {X_test.shape}")
-3️⃣ Train XGBoost Model
 
+3️⃣ Train XGBoost Model
 import xgboost as xgb
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
@@ -96,8 +96,8 @@ rmse_xgb = mean_squared_error(y_test, y_pred_xgb, squared=False)
 r2_xgb = r2_score(y_test, y_pred_xgb)
 
 print(f"XGBoost Performance:\nMAE: {mae_xgb:.4f}, RMSE: {rmse_xgb:.4f}, R²: {r2_xgb:.4f}")
-4️⃣ Train LightGBM Model
 
+4️⃣ Train LightGBM Model
 import lightgbm as lgb
 
 # Initialize LightGBM model with best parameters
@@ -115,8 +115,8 @@ rmse_lgb = mean_squared_error(y_test, y_pred_lgb, squared=False)
 r2_lgb = r2_score(y_test, y_pred_lgb)
 
 print(f"LightGBM Performance:\nMAE: {mae_lgb:.4f}, RMSE: {rmse_lgb:.4f}, R²: {r2_lgb:.4f}")
-5️⃣ Train Artificial Neural Network (ANN)
 
+5️⃣ Train Artificial Neural Network (ANN)
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
@@ -143,6 +143,7 @@ rmse_ann = mean_squared_error(y_test, y_pred_ann, squared=False)
 r2_ann = r2_score(y_test, y_pred_ann)
 
 print(f"ANN Performance:\nMAE: {mae_ann:.4f}, RMSE: {rmse_ann:.4f}, R²: {r2_ann:.4f}")
+
 6️⃣ Compare Model Performances
 import pandas as pd
 
@@ -156,14 +157,15 @@ performance_df = pd.DataFrame({
 
 # Print results
 print("\nModel Performance Comparison:\n", performance_df)
-7️⃣ Save & Deploy the Best Model
 
+7️⃣ Save & Deploy the Best Model
 import joblib
 # Save the best-performing model
 best_model = xgb_model  # Example: XGBoost performed best
 joblib.dump(best_model, "best_model.pkl")
 
 print("Best model saved as 'best_model.pkl'.")
+
 8️⃣ Load & Use the Saved Model for Inference
 # Load the saved model
 loaded_model = joblib.load("best_model.pkl")
